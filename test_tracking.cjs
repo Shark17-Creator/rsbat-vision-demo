@@ -1,0 +1,17 @@
+const fs=require('fs'),assert=require('assert'),vm=require('vm'),T=require(process.env.THREE_TEST_MODULE || 'three');
+const {RSBatTracking}=require(__dirname+'/tracking.js');
+const matrix=(p,q=new T.Quaternion(),scale=new T.Vector3(1,1,1))=>new T.Matrix4().compose(p,q,scale);
+const p=new T.Vector3(0,-.2,-1.5),q=new T.Quaternion().setFromEuler(new T.Euler(-.6,.1,0));
+const second=p.clone().add(new T.Vector3(.6,0,0).applyQuaternion(q));
+const pair=[matrix(p,q),matrix(second,q)];let tr=RSBatTracking.createTracker(T),r;
+for(let i=0;i<8;i++)r=tr.update(pair,.6,i*33+1);
+assert(r.visible);assert(r.position.distanceTo(p)<1e-10);assert(r.quaternion.angleTo(q)<1e-6);assert.equal(r.scale,1);
+r=tr.update([pair[0],null],.6,300);assert(!r.visible);
+for(let i=0;i<7;i++){r=tr.update(pair,.6,333+i*33);assert(!r.visible);}assert(tr.update(pair,.6,600).visible);
+assert(!tr.update([pair[0],matrix(second.clone().add(new T.Vector3(.3,0,0)),q)],.6,650).visible);
+assert(!tr.update([pair[0],matrix(second,new T.Quaternion().setFromEuler(new T.Euler(1,0,0)))],.6,700).visible);
+assert(!tr.update([matrix(p,q,new T.Vector3(.5,.5,.5)),pair[1]],.6,750).visible);
+tr=RSBatTracking.createTracker(T);for(let i=0;i<8;i++)tr.update(pair,.6,i*33);
+const jump=new T.Vector3(.5,0,0);assert(!tr.update([matrix(p.clone().add(jump),q),matrix(second.clone().add(jump),q)],.6,270).visible);
+const html=fs.readFileSync(__dirname+'/index.html','utf8');new vm.Script(html.match(/<script>([\s\S]*?)<\/script>/)[1]);assert(html.includes("marker.setAttribute('smooth','false')"));assert(html.includes('wall.scale.set(1,1,1)'));assert(!html.includes('marker.appendChild(model)'));assert.equal((html.match(/section class="print"/g)||[]).length,2);
+console.log('PASS : calage métrique 2 repères, acquisition 8 images, perte/reprise, désaccord position/orientation, rejet échelle déformée, rejet saut, syntaxe, deux feuilles.');
