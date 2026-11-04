@@ -12,7 +12,10 @@ function createTracker(T){
  function update(matrices,gap,time){
   if(matrices.length!==2||matrices.some(m=>!m)){reset();return {visible:false,reason:'Visez les deux repères'};}
   const a=candidate(matrices[0],0),b=candidate(matrices[1],gap);
-  if(!a||!b||a.p.distanceTo(b.p)>.08||a.q.angleTo(b.q)>Math.PI/15){reset();return {visible:false,reason:'Ajustez les deux repères'};}
+  if(!a||!b){reset();return {visible:false,reason:'Mesure déformée — recalage'};}
+  const measured=new T.Vector3().setFromMatrixPosition(matrices[0]).distanceTo(new T.Vector3().setFromMatrixPosition(matrices[1]));
+  const distanceError=a.p.distanceTo(b.p),angleError=a.q.angleTo(b.q);
+  if(distanceError>.08||angleError>Math.PI/15){reset();return {visible:false,reason:'Mesuré '+Math.round(measured*100)+' cm / réglé '+Math.round(gap*100)+' cm · écart de calage '+Math.round(distanceError*100)+' cm · angle '+Math.round(angleError*180/Math.PI)+'°'};}
   const pose={p:a.p.clone().lerp(b.p,.5),q:a.q.clone().slerp(b.q,.5).normalize()};
   const dt=last?Math.min(.2,Math.max(.001,(time-last)/1000)):1/30;last=time;
   if(previous&&(pose.p.distanceTo(previous.p)>.08+dt*1.5||pose.q.angleTo(previous.q)>.15+dt*2)){previous=pose;filtered=null;count=0;return {visible:false,reason:'Recalage…'};}
