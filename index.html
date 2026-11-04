@@ -1,6 +1,6 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="referrer" content="no-referrer"><title>RS-BAT · Vision</title><style>
 :root{font-family:system-ui,sans-serif;color:#eef5ff;background:#0a1422;color-scheme:dark}*{box-sizing:border-box}body{margin:0}header{padding:18px 20px;border-bottom:3px solid #ffd428;background:#10273f;display:flex;justify-content:space-between;align-items:center}header b{letter-spacing:.12em}small,.muted{color:#adbed0}main{max-width:840px;margin:auto;padding:22px 18px 60px}h1{font-size:clamp(25px,5vw,36px);margin:12px 0}p{line-height:1.55}.tag{font-size:12px;background:#ffd428;color:#172233;padding:5px 9px;border-radius:30px;font-weight:700}.card{background:#14283e;border:1px solid #2d455e;border-radius:16px;padding:18px;margin:16px 0}button,.btn{display:inline-block;text-decoration:none;border:1px solid #48617c;background:#203c58;color:white;border-radius:10px;padding:13px 16px;font:600 16px system-ui;cursor:pointer;min-height:48px}button:focus-visible,a:focus-visible{outline:3px solid #ffd428;outline-offset:3px}.primary{background:#ffd428;color:#172233;border:0}.actions{display:flex;flex-wrap:wrap;gap:10px}button:disabled{opacity:.5}label{display:block;margin:12px 0}input[type=range]{width:100%;height:32px}#preview{height:300px;width:100%;border-radius:12px;background:#e3edf3;touch-action:pan-y}#status{min-height:24px;margin:12px 0;line-height:1.4}#cameraUI{position:fixed;inset:0;z-index:100;pointer-events:none;display:none;padding:max(12px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom))}#cameraUI .panel{pointer-events:auto;background:#0a1422ed;padding:12px;border-radius:12px}#tracking{font-weight:700;margin:4px 0;font-size:14px}#cameraUI .panel{padding:8px 12px}#cameraUI button{min-height:40px;padding:8px 12px;font-size:14px}#scene{display:none;position:fixed;inset:0;z-index:10}body.camera #scene{display:block}#scene a-scene{width:100%;height:100%}body.camera main,body.camera header{display:none}body.camera{background:transparent}body.camera #cameraUI{display:block}.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}.settings input{display:block;width:100%;margin-top:6px;padding:12px;border:1px solid #48617c;border-radius:8px;background:#0a1422;color:white;font:inherit;font-size:16px}summary{cursor:pointer;min-height:36px;font-weight:600}.print{display:none}.marker{width:160mm;height:160mm;object-fit:contain}#qr,#qrB{width:35mm;height:35mm}@media print{@page{size:A4;margin:12mm}body{background:white;color:black}header,main,#cameraUI,#scene,video,canvas{display:none!important}.print{display:block;text-align:center;break-after:page}.print:last-of-type{break-after:auto}.print h1{font-size:22px}.print p{font-size:13px}.print img{display:block;margin:8mm auto}.print .rule{width:100mm;border-top:2px solid black;margin:auto}}
-</style></head><body><header><b>RS·BAT / VISION</b><span class="tag">VUE MUR · 03</span></header><main>
+</style></head><body><header><b>RS·BAT / VISION</b><span class="tag">VUE MUR · 04</span></header><main>
 <h1>Votre mur, en situation.</h1><p class="muted">Réglez les dimensions, puis ouvrez la caméra.</p>
 <div class="card"><canvas id="preview" aria-label="Aperçu du mur"></canvas><label for="rotation">Vue 3D <input id="rotation" type="range" min="0" max="360" value="35"></label></div>
 <div class="actions"><button id="start" class="primary">Voir le mur</button><button id="print">Imprimer le repère</button></div><p id="status" role="status" aria-live="polite">Prêt</p>
@@ -13,10 +13,10 @@
 <label>Recul derrière le repère · m<input id="wallOffset" type="number" min="0.2" max="5" step="0.1" value="0.5"></label>
 </div><small>Posez A et B à plat, à 60 cm de centre à centre, B à droite de A, hauts des feuilles alignés. Gardez les deux dans la caméra.</small></details>
 <details class="card"><summary>Outils et informations</summary><button id="download">Exporter les dimensions</button><p>Échelle calculée à partir du côté extérieur du carré noir imprimé. Mesure initiale estimée sur votre photo : 14 cm.</p><p>Visualisation indicative · implantation à contrôler au laser. Le suivi nécessite les deux repères visibles et concordants. Aucun plan de chantier n’est chargé.</p></details>
-</main><div id="scene"></div><aside id="cameraUI"><div class="panel"><div class="actions"><button id="stop">Fermer la caméra</button></div><p id="tracking" role="status" aria-live="polite">Visez le repère</p><small id="metricLabel">Mur en mètres · 03</small></div></aside>
+</main><div id="scene"></div><aside id="cameraUI"><div class="panel"><div class="actions"><button id="stop">Fermer la caméra</button></div><p id="markerStatus" style="font-size:13px;margin:6px 0">A : attente · B : attente</p><p id="tracking" role="status" aria-live="polite">Visez le repère</p><small id="metricLabel">Mur en mètres · 04</small></div></aside>
 <section class="print"><h1>RS-BAT · A</h1><img class="marker" src="hiro.png" alt="Repère A Hiro"><img id="qr" src="qr.png" alt="RS-BAT Vision"></section>
 <section class="print"><h1>RS-BAT · B</h1><img class="marker" src="kanji.png" alt="Repère B"><img id="qrB" src="qr.png" alt="RS-BAT Vision"></section>
-<script src="tracking.js?v=3"></script>
+<script src="tracking.js?v=4"></script>
 <script>
 'use strict';
 
@@ -28,23 +28,32 @@ function updatePreview(){try{const c=settings();if(!viewScene)return;if(house){v
 const engineReady=loadScript('https://aframe.io/releases/1.6.0/aframe.min.js').then(()=>{T3=AFRAME.THREE;renderer=new T3.WebGLRenderer({canvas:$('preview'),antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));viewScene=new T3.Scene();viewScene.background=new T3.Color(0xe3edf3);viewCamera=new T3.PerspectiveCamera(45,1,.1,100);viewCamera.position.set(5,4,6);viewCamera.lookAt(0,1.25,0);house=makeHouse(T3);viewScene.add(house);viewScene.add(new T3.HemisphereLight(0xffffff,0x486577,3));const sun=new T3.DirectionalLight(0xffffff,3);sun.position.set(10,15,8);viewScene.add(sun);const grid=new T3.GridHelper(10,10,0xa2b6c5,0xc5d4dd);viewScene.add(grid);const draw=()=>{const r=$('preview').getBoundingClientRect();if(!r.width)return;renderer.setSize(r.width,r.height,false);viewCamera.aspect=r.width/r.height;viewCamera.updateProjectionMatrix();house.rotation.y=Number($('rotation').value)*Math.PI/180;renderer.render(viewScene,viewCamera);};drawPreview=draw;$('rotation').oninput=draw;new ResizeObserver(draw).observe($('preview'));updatePreview();});engineReady.catch(e=>{$('status').textContent='La 3D est indisponible dans ce navigateur. Essayez Safari ou Chrome avec WebGL activé. Vous pouvez toujours imprimer le repère et télécharger le JSON.';$('start').disabled=true;});
 let arReady;
 function stop(){active=false;generation++;document.querySelectorAll('video').forEach(v=>{if(v.srcObject)v.srcObject.getTracks().forEach(t=>t.stop());});if(scene){scene.pause();scene.remove();scene=null;}document.querySelectorAll('#arjs-video,.arjs-loader').forEach(e=>e.remove());document.body.classList.remove('camera');document.body.style.width='';document.body.style.height='';document.body.style.margin='';document.body.style.overflow='';$('start').disabled=false;$('status').textContent='Caméra arrêtée.';}
-function installTracking(){
- if(AFRAME.components['rsbat-pair'])return;
- AFRAME.registerComponent('rsbat-pair',{
-  init:function(){this.frame=0;this.seen=-1;this.ctx=null;this.tracker=RSBatTracking.createTracker(T3);this.onFrame=()=>{this.frame++;this.lastFrame=performance.now();};},
-  tick:function(){
-   const el=this.el,wall=el._rsWall,c=el._rsConfig,markers=el._rsMarkers;if(!wall||!c)return;
-   const ctx=el.systems.arjs&&el.systems.arjs._arSession&&el.systems.arjs._arSession.arContext;
-   if(ctx&&!this.ctx){this.ctx=ctx;ctx.addEventListener('sourceProcessed',this.onFrame);}
-   if(this.seen===this.frame){if(!this.lastFrame||performance.now()-this.lastFrame>180){wall.visible=false;$('tracking').textContent='Visez les deux repères';}return;}this.seen=this.frame;
-   const controls=markers.map(m=>m.components['arjs-anchor']?._arAnchor?.controls);
-   if(controls.some(ctrl=>ctrl&&Math.abs(ctrl.parameters.size-c.marker)>1e-6)){wall.visible=false;$('tracking').textContent='Rechargez le visualiseur';return;}
-   const matrices=controls.map(ctrl=>ctrl&&ctrl.object3d.visible?ctrl.object3d.matrix:null);
-   const result=this.tracker.update(matrices,c.gap,performance.now());wall.visible=result.visible;
-   if(result.visible){wall.position.copy(result.position);wall.quaternion.copy(result.quaternion);wall.scale.set(1,1,1);}
-   $('tracking').textContent=result.reason;
-  },remove:function(){if(this.ctx)this.ctx.removeEventListener('sourceProcessed',this.onFrame);}
- });
+function runTracking(arScene,config,run){
+ const tracker=RSBatTracking.createTracker(T3);let seen=null,wall=null;
+ function frame(){
+  if(!active||run!==generation||scene!==arScene)return;
+  try{
+   if(!wall&&arScene.object3D){wall=makeHouse(T3,config,true);wall.visible=false;arScene.object3D.add(wall);arScene._rsWall=wall;}
+   const controls=arScene._rsMarkers.map(m=>m.components?.['arjs-anchor']?._arAnchor?.controls);
+   $('markerStatus').textContent=controls.map((ctrl,i)=>(i?'B':'A')+' : '+(!ctrl?'chargement':ctrl.object3d.visible?'détecté':'non détecté')).join(' · ');
+   const ctx=controls.find(Boolean)?.context||arScene.systems?.arjs?._arSession?.arContext;
+   const now=performance.now(),stamp=ctx?._updatedAt;
+   if(!wall||!ctx||stamp==null){$('tracking').textContent='Initialisation du suivi…';}
+   else if(now-stamp>500){wall.visible=false;tracker.reset();$('tracking').textContent='Analyse caméra interrompue';}
+   else if(stamp!==seen){
+    seen=stamp;
+    if(controls.some(ctrl=>ctrl&&Math.abs(ctrl.parameters.size-config.marker)>1e-6)){wall.visible=false;$('tracking').textContent='Taille du repère non appliquée — rechargez';}
+    else{
+     const matrices=controls.map(ctrl=>ctrl&&ctrl.object3d.visible?ctrl.object3d.matrix:null);
+     const result=tracker.update(matrices,config.gap,stamp);wall.visible=result.visible;
+     if(result.visible){wall.position.copy(result.position);wall.quaternion.copy(result.quaternion);wall.scale.set(1,1,1);}
+     $('tracking').textContent=result.reason;
+    }
+   }
+  }catch(error){if(wall)wall.visible=false;$('tracking').textContent='Suivi indisponible : '+error.message;}
+  requestAnimationFrame(frame);
+ }
+ requestAnimationFrame(frame);
 }
 $('start').onclick=async()=>{
  if(!isSecureContext||!navigator.mediaDevices){$('status').textContent='La caméra nécessite HTTPS et un navigateur compatible.';return;}
@@ -52,15 +61,14 @@ $('start').onclick=async()=>{
  const run=++generation;$('start').disabled=true;$('status').textContent='Chargement de la caméra…';
  try{
   await engineReady;await(arReady||(arReady=loadScript('./aframe-ar-rsbat-3.4.7.js')));if(run!==generation)return;
-  installTracking();active=true;document.body.classList.add('camera');scene=document.createElement('a-scene');
+  active=true;document.body.classList.add('camera');scene=document.createElement('a-scene');
   scene.setAttribute('embedded','');scene.setAttribute('vr-mode-ui','enabled:false');scene.setAttribute('renderer','alpha:true;antialias:true');
   scene.setAttribute('arjs','sourceType:webcam;debugUIEnabled:false;detectionMode:mono;canvasWidth:1280;canvasHeight:960;');
   scene._rsConfig=config;scene._rsMarkers=[];
   for(const name of ['hiro','kanji']){const marker=document.createElement('a-marker');marker.setAttribute('type','pattern');marker.setAttribute('url','./pattern-'+name+'.patt');marker.setAttribute('size',String(config.marker));marker.setAttribute('smooth','false');scene.appendChild(marker);scene._rsMarkers.push(marker);}
   const camera=document.createElement('a-entity');camera.setAttribute('camera','near:0.01;far:100');scene.appendChild(camera);
-  scene.setAttribute('rsbat-pair','');
-  scene.addEventListener('loaded',()=>{if(run!==generation)return;const wall=makeHouse(T3,config,true);wall.visible=false;scene._rsWall=wall;scene.object3D.add(wall);});
-  $('scene').appendChild(scene);$('tracking').textContent='Visez les deux repères';$('metricLabel').textContent='Mur '+config.length+' × '+config.height+' m · 03';
+  
+  $('scene').appendChild(scene);runTracking(scene,config,run);$('tracking').textContent='Visez les deux repères';$('metricLabel').textContent='Mur '+config.length+' × '+config.height+' m · 04';
  }catch(e){stop();$('status').textContent=e.message;}
 };
 window.addEventListener('camera-init',()=>{if(!active)document.querySelectorAll('video').forEach(v=>{if(v.srcObject)v.srcObject.getTracks().forEach(t=>t.stop());});});
