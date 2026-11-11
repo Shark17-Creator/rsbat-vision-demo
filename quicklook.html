@@ -1,9 +1,43 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0d2137"><title>RS-BAT · AR</title><style>
 *{box-sizing:border-box}body{margin:0;background:#091522;color:#f2f6fc;font:17px/1.5 system-ui,-apple-system,sans-serif}header{padding:18px 22px;border-bottom:2px solid #ffcc29;display:flex;justify-content:space-between;align-items:center}header strong{letter-spacing:.15em}header span{font-size:12px;color:#9fb3c8}main{max-width:680px;margin:auto;padding:24px 18px}label{display:block;font-size:13px;color:#a8bdd1;margin-bottom:8px}select{width:100%;padding:14px;border:1px solid #34516c;background:#142a40;color:white;border-radius:12px;font:inherit}a.ar{display:block;text-decoration:none;color:#091522;margin-top:18px}a.ar img{width:100%;height:300px;object-fit:contain;background:#0d2137;border-radius:18px}a.ar span,button{display:block;width:100%;padding:16px;text-align:center;border-radius:12px;font:700 17px system-ui;border:0;cursor:pointer}a.ar span{background:#ffcc29;margin-top:16px}button{background:#1b334b;color:white;margin-top:12px}p{text-align:center;color:#a8bdd1;font-size:14px;margin:8px}a:focus-visible,button:focus-visible,select:focus-visible{outline:3px solid white;outline-offset:3px}#sheet{display:none}@page{size:A4 portrait;margin:15mm}@media print{body{background:white;color:black}header,main{display:none}#sheet{display:flex;height:260mm;flex-direction:column;align-items:center;justify-content:center;gap:14mm}#sheet h1{font:700 28pt system-ui;margin:0}#sheet img{width:150mm;height:150mm;image-rendering:pixelated}#sheet p{color:black;font:14pt system-ui}}@media(max-width:500px){main{padding-top:18px}a.ar img{height:260px}}
-</style></head><body><header><strong>RS-BAT</strong><span>AR · 03</span></header><main><label for="model">Modèle</label><select id="model"><option value="epalinges">Escalier Épalinges</option><option value="imer">IMER</option><option value="escalier">Escalier en colimaçon</option><option value="mur">Mur</option><option value="cube">Cube</option></select><a id="ar" class="ar" rel="ar" href="imer-quicklook.usdz#allowsContentScaling=0"><img id="preview" src="imer-quicklook.png" alt="IMER en 3D"><span>Démarrer AR</span></a><p id="dimensions">2 m × 1,50 m × 20 cm</p><button id="print" type="button">Imprimer</button></main><section id="sheet"><h1 id="printTitle">IMER</h1><img id="qr" src="qr-imer.png" alt="QR code du modèle"><p>RS-BAT · AR</p></section><script>
+
+[hidden]{display:none!important}
+#sika-options{margin:18px 0 0}
+.sika-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+.sika-fields input{width:100%;padding:12px;border:1px solid #34516c;background:#142a40;color:white;border-radius:12px;font:inherit}
+#sika-ar{position:relative;padding:16px;text-align:center;background:#ffcc29;color:#091522;font-weight:750;text-decoration:none;border-radius:12px;display:block;margin-top:12px}
+#sika-ar img{display:block;width:100%;height:24px;object-fit:contain}
+#sika-download{display:block;text-align:center;margin-top:12px;color:#c0d6ed}
+#sika-error{color:#ffd082}
+</style></head><body><header><strong>RS-BAT</strong><span>AR · 03</span></header><main><label for="model">Modèle</label><select id="model"><option value="epalinges">Escalier Épalinges</option><option value="imer">IMER</option><option value="escalier">Escalier en colimaçon</option><option value="mur">Mur</option><option value="cube">Cube</option><option value="sika">Sika sol bleu</option></select>
+<section id="sika-options" hidden>
+  <label for="sika-shape">Forme</label>
+  <select id="sika-shape"><option value="square">Carré</option><option value="rectangle">Rectangle</option></select>
+  <div class="sika-fields">
+    <div><label id="sika-width-label" for="sika-width">Côté (m)</label><input id="sika-width" type="text" inputmode="decimal" value="3" maxlength="12"></div>
+    <div hidden><label for="sika-length">Longueur (m)</label><input id="sika-length" type="text" inputmode="decimal" value="5" maxlength="12"></div>
+  </div>
+  <p id="sika-size" aria-live="polite"></p>
+  <p id="sika-error" role="status" hidden>Entre une dimension supérieure à 0 m et au maximum 100 m.</p>
+  <a id="sika-ar" rel="ar" aria-label="Démarrer AR"><img alt="Démarrer AR" src="sika-ar-button.png"></a>
+  <a id="sika-download">Télécharger le modèle USDZ</a>
+</section>
+<a id="ar" class="ar" rel="ar" href="imer-quicklook.usdz#allowsContentScaling=0"><img id="preview" src="imer-quicklook.png" alt="IMER en 3D"><span>Démarrer AR</span></a><p id="dimensions">2 m × 1,50 m × 20 cm</p><button id="print" type="button">Imprimer</button></main><section id="sheet"><h1 id="printTitle">IMER</h1><img id="qr" src="qr-imer.png" alt="QR code du modèle"><p>RS-BAT · AR</p></section><script src="sika-sol.js"></script><script>
 const models={epalinges:{name:"Escalier Épalinges",dim:"Échelle 1:1 · modèle fourni"},imer:{name:'IMER',dim:'2 m × 1,50 m × 20 cm'},escalier:{name:'Escalier en colimaçon',dim:'Ø 2 m · montée 2,80 m'},mur:{name:'Mur',dim:'3 m × 2,50 m × 20 cm'},cube:{name:'Cube',dim:'30 × 30 × 30 cm'}};
 const select=document.getElementById('model');
-function update(){const k=select.value,m=models[k];document.getElementById('ar').href=k+'-quicklook.usdz#allowsContentScaling=0';document.getElementById('preview').src=k+'-quicklook.png';document.getElementById('preview').alt=m.name+' en 3D';document.getElementById('dimensions').textContent=m.dim;document.getElementById('qr').src='qr-'+k+'.png';document.getElementById('printTitle').textContent=m.name;const u=new URL(location.href);u.searchParams.set('model',k);history.replaceState(null,'',u);}
-const initial=new URLSearchParams(location.search).get('model');if(Object.prototype.hasOwnProperty.call(models,initial))select.value=initial;select.addEventListener('change',update);update();document.getElementById('print').addEventListener('click',async()=>{const qr=document.getElementById('qr');try{await qr.decode();window.print()}catch{alert('QR indisponible. Rechargez la page.')}});
+function update(){
+const k = select.value;
+const isSika = k === 'sika';
+sikaPanel.hidden = !isSika;
+for (const id of ['ar', 'dimensions', 'print']) {
+  document.getElementById(id).hidden = isSika;
+}
+if (isSika) updateSikaFloor();
+const u = new URL(location.href);
+u.searchParams.set('model', k);
+history.replaceState(null, '', u);
+if (isSika) return;
+const m = models[k];document.getElementById('ar').href=k+'-quicklook.usdz#allowsContentScaling=0';document.getElementById('preview').src=k+'-quicklook.png';document.getElementById('preview').alt=m.name+' en 3D';document.getElementById('dimensions').textContent=m.dim;document.getElementById('qr').src='qr-'+k+'.png';document.getElementById('printTitle').textContent=m.name;}
+const initial=new URLSearchParams(location.search).get('model');if(initial === "sika" || Object.prototype.hasOwnProperty.call(models,initial))select.value=initial;select.addEventListener('change',update);update();document.getElementById('print').addEventListener('click',async()=>{const qr=document.getElementById('qr');try{await qr.decode();window.print()}catch{alert('QR indisponible. Rechargez la page.')}});
 </script></body></html>
