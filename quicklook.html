@@ -10,7 +10,9 @@
 #sika-ar img{display:block;width:100%;height:24px;object-fit:contain}
 #sika-download{display:block;text-align:center;margin-top:12px;color:#c0d6ed}
 #sika-error{color:#ffd082}
-</style></head><body><header><strong>RS-BAT</strong><span>AR · 03</span></header><main><label for="model">Modèle</label><select id="model"><option value="epalinges">Escalier Épalinges</option><option value="imer">IMER</option><option value="escalier">Escalier en colimaçon</option><option value="mur">Mur</option><option value="cube">Cube</option><option value="sika">Sika sol bleu</option></select>
+button:disabled{opacity:.55;cursor:default}
+#sika-qr svg{display:block;width:110mm;height:110mm}
+</style></head><body><header><strong>RS-BAT</strong><span>AR · 04</span></header><main><label for="model">Modèle</label><select id="model"><option value="epalinges">Escalier Épalinges</option><option value="imer">IMER</option><option value="escalier">Escalier en colimaçon</option><option value="mur">Mur</option><option value="cube">Cube</option><option value="sika">Sika sol bleu</option></select>
 <section id="sika-options" hidden>
   <label for="sika-shape">Forme</label>
   <select id="sika-shape"><option value="square">Carré</option><option value="rectangle">Rectangle</option></select>
@@ -23,21 +25,47 @@
   <a id="sika-ar" rel="ar" aria-label="Démarrer AR"><img alt="Démarrer AR" src="sika-ar-button.png"></a>
   <a id="sika-download">Télécharger le modèle USDZ</a>
 </section>
-<a id="ar" class="ar" rel="ar" href="imer-quicklook.usdz#allowsContentScaling=0"><img id="preview" src="imer-quicklook.png" alt="IMER en 3D"><span>Démarrer AR</span></a><p id="dimensions">2 m × 1,50 m × 20 cm</p><button id="print" type="button">Imprimer</button></main><section id="sheet"><h1 id="printTitle">IMER</h1><img id="qr" src="qr-imer.png" alt="QR code du modèle"><p>RS-BAT · AR</p></section><script src="sika-sol.js"></script><script>
+<a id="ar" class="ar" rel="ar" href="imer-quicklook.usdz#allowsContentScaling=0"><img id="preview" src="imer-quicklook.png" alt="IMER en 3D"><span>Démarrer AR</span></a><p id="dimensions">2 m × 1,50 m × 20 cm</p><button id="print" type="button">Imprimer</button></main><section id="sheet"><h1 id="printTitle">IMER</h1><img id="qr" src="qr-imer.png" alt="QR code du modèle"><div id="sika-qr" hidden></div><p id="sika-print-size" hidden></p><p>RS-BAT · AR</p></section><script src="sika-qrcode.js"></script><script src="sika-sol.js"></script><script>
 const models={epalinges:{name:"Escalier Épalinges",dim:"Échelle 1:1 · modèle fourni"},imer:{name:'IMER',dim:'2 m × 1,50 m × 20 cm'},escalier:{name:'Escalier en colimaçon',dim:'Ø 2 m · montée 2,80 m'},mur:{name:'Mur',dim:'3 m × 2,50 m × 20 cm'},cube:{name:'Cube',dim:'30 × 30 × 30 cm'}};
 const select=document.getElementById('model');
 function update(){
 const k = select.value;
 const isSika = k === 'sika';
 sikaPanel.hidden = !isSika;
-for (const id of ['ar', 'dimensions', 'print']) {
+for (const id of ['ar', 'dimensions']) {
   document.getElementById(id).hidden = isSika;
 }
+const printButton = document.getElementById('print');
+printButton.textContent = isSika ? 'Imprimer le QR A4' : 'Imprimer';
+printButton.disabled = false;
+document.getElementById('qr').hidden = isSika;
+document.getElementById('sika-qr').hidden = !isSika;
+document.getElementById('sika-print-size').hidden = !isSika;
 if (isSika) updateSikaFloor();
 const u = new URL(location.href);
 u.searchParams.set('model', k);
 history.replaceState(null, '', u);
 if (isSika) return;
 const m = models[k];document.getElementById('ar').href=k+'-quicklook.usdz#allowsContentScaling=0';document.getElementById('preview').src=k+'-quicklook.png';document.getElementById('preview').alt=m.name+' en 3D';document.getElementById('dimensions').textContent=m.dim;document.getElementById('qr').src='qr-'+k+'.png';document.getElementById('printTitle').textContent=m.name;}
-const initial=new URLSearchParams(location.search).get('model');if(initial === "sika" || Object.prototype.hasOwnProperty.call(models,initial))select.value=initial;select.addEventListener('change',update);update();document.getElementById('print').addEventListener('click',async()=>{const qr=document.getElementById('qr');try{await qr.decode();window.print()}catch{alert('QR indisponible. Rechargez la page.')}});
+const params = new URLSearchParams(location.search);
+const initial = params.get('model');
+if (initial === 'sika' || Object.prototype.hasOwnProperty.call(models, initial)) {
+  select.value = initial;
+}
+if (initial === 'sika') restoreSikaDimensions(params);
+select.addEventListener('change', update);
+update();
+document.getElementById('print').addEventListener('click', async () => {
+  if (select.value === 'sika') {
+    printSikaQr();
+    return;
+  }
+
+  try {
+    await document.getElementById('qr').decode();
+    window.print();
+  } catch {
+    alert('QR indisponible. Rechargez la page.');
+  }
+});
 </script></body></html>

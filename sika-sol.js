@@ -120,6 +120,7 @@ function updateSikaFloor() {
   sikaAr.hidden = !valid;
   sikaDownload.hidden = !valid;
   document.getElementById('sika-error').hidden = valid;
+  document.getElementById('print').disabled = !valid;
   if (!valid) {
     sikaAr.removeAttribute('href');
     sikaDownload.removeAttribute('href');
@@ -138,3 +139,32 @@ function updateSikaFloor() {
 sikaShape.addEventListener('change', updateSikaFloor);
 sikaWidth.addEventListener('input', updateSikaFloor);
 sikaLength.addEventListener('input', updateSikaFloor);
+
+function restoreSikaDimensions(params) {
+  if (params.get('forme') === 'rectangle') sikaShape.value = 'rectangle';
+  for (const [key, field] of [['largeur', sikaWidth], ['longueur', sikaLength]]) {
+    const value = params.get(key);
+    if (value && /^\d+(?:\.\d+)?$/.test(value) && Number(value) > 0 && Number(value) <= 100) {
+      field.value = value;
+    }
+  }
+}
+
+function printSikaQr() {
+  const rectangle = sikaShape.value === 'rectangle';
+  const url = new URL('https://shark17-creator.github.io/rsbat-vision-demo/quicklook.html');
+  url.searchParams.set('model', 'sika');
+  url.searchParams.set('forme', rectangle ? 'rectangle' : 'carre');
+  url.searchParams.set('largeur', sikaWidth.value.trim().replace(',', '.').replace(/^\./, '0.'));
+  if (rectangle) {
+    url.searchParams.set('longueur', sikaLength.value.trim().replace(',', '.').replace(/^\./, '0.'));
+  }
+
+  const code = qrcode(0, 'M');
+  code.addData(url.href);
+  code.make();
+  document.getElementById('sika-qr').innerHTML = code.createSvgTag({cellSize: 8, margin: 32, scalable: true});
+  document.getElementById('printTitle').textContent = 'Sika sol bleu';
+  document.getElementById('sika-print-size').textContent = document.getElementById('sika-size').textContent;
+  window.print();
+}
