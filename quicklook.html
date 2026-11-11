@@ -25,7 +25,7 @@ button:disabled{opacity:.55;cursor:default}
   <a id="sika-ar" rel="ar" aria-label="Démarrer AR"><img alt="Démarrer AR" src="sika-ar-button.png"></a>
   <a id="sika-download">Télécharger le modèle USDZ</a>
 </section>
-<a id="ar" class="ar" rel="ar" href="imer-quicklook.usdz#allowsContentScaling=0"><img id="preview" src="imer-quicklook.png" alt="IMER en 3D"><span>Démarrer AR</span></a><p id="dimensions">2 m × 1,50 m × 20 cm</p><button id="print" type="button">Imprimer</button></main><section id="sheet"><h1 id="printTitle">IMER</h1><img id="qr" src="qr-imer.png" alt="QR code du modèle"><div id="sika-qr" hidden></div><p id="sika-print-size" hidden></p><p>RS-BAT · AR</p></section><script src="sika-qrcode.js"></script><script src="sika-sol.js"></script><script>
+<a id="ar" class="ar" rel="ar" href="imer-quicklook.usdz#allowsContentScaling=0"><img id="preview" src="imer-quicklook.png" alt="IMER en 3D"><span>Démarrer AR</span></a><p id="dimensions">2 m × 1,50 m × 20 cm</p><button id="print" type="button">Imprimer</button></main><section id="sheet"><h1 id="printTitle">IMER</h1><img id="qr" src="qr-imer.png" alt="QR code du modèle"><div id="sika-qr" hidden></div><p id="sika-print-size" hidden></p><p>RS-BAT · AR</p></section><script src="sika-qrcode.js"></script><script src="sika-sol-qr.js"></script><script>
 const models={epalinges:{name:"Escalier Épalinges",dim:"Échelle 1:1 · modèle fourni"},imer:{name:'IMER',dim:'2 m × 1,50 m × 20 cm'},escalier:{name:'Escalier en colimaçon',dim:'Ø 2 m · montée 2,80 m'},mur:{name:'Mur',dim:'3 m × 2,50 m × 20 cm'},cube:{name:'Cube',dim:'30 × 30 × 30 cm'}};
 const select=document.getElementById('model');
 function update(){
